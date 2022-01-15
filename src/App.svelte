@@ -1,4 +1,35 @@
 <script>
+  import CustomButton from "./CustomButton.svelte";
+
+  function handleClick01() {
+    alert("Button Clicked");
+  }
+
+  let m = { x: 0, y: 0 };
+
+  //DOM events
+
+  function handleClick11() {
+    alert("no more alerts");
+  }
+
+  import Inner from "./Inner.svelte";
+
+  function handleMessage(event) {
+    alert(event.detail.text);
+  }
+
+  //component-event
+
+  import Info from "./Info.svelte";
+
+  const pkg = {
+    name: "svelte",
+    version: 3,
+    speed: "blazing",
+    website: "https://svelte.dev",
+  };
+
   async function getRandomNumber() {
     const res = await fetch(`/tutorial/random-number`);
     const text = await res.text();
@@ -12,9 +43,10 @@
 
   let promise = getRandomNumber();
 
-  function handleClick() {
+  function handleClick02() {
     promise = getRandomNumber();
   }
+  //await blocks
 
   let user = { loggedIn: false };
 
@@ -22,23 +54,14 @@
     user.loggedIn = !user.loggedIn;
   }
 
-  import Info from "./Info.svelte";
-
-  const pkg = {
-    name: "svelte",
-    version: 3,
-    speed: "blazing",
-    website: "https://svelte.dev",
-  };
-
   import Nested from "./Nested.svelte";
   //Nested components
 
-  let src = "/tutorial/image.gif";
+  let src = "image.GIF";
   //dynamic attributes
 
-  let name1 = "world";
-  let name = "Rick Astley";
+  let name = "world";
+  let name2 = "Rick Astley";
 
   let string = `this string contains some <strong>HTML!!!</strong>`;
   //HTML tags
@@ -81,9 +104,6 @@
 
   //Statments
 
-  function handleClick2() {
-    count += 1;
-  }
   //Declarations
 
   let numbers = [1, 2, 3, 4];
@@ -97,22 +117,35 @@
 </script>
 
 <main>
-  <button on:click={handleClick}> generate random number </button>
-
+  <Inner on:message={handleMessage} />
   {#if user.loggedIn}
     <button on:click={toggle}> Log out </button>
   {:else}
     <button on:click={toggle}> Log in </button>
   {/if}
 
-  <h1>Hello {name1.toUpperCase()}!</h1>
-  <h1>Hello {name.toUpperCase()}!</h1>
+  <input bind:value={name} />
+
+  <h1>Hello {name}!</h1>
+
+  <h1>Hello {name2.toUpperCase()}!</h1>
+
+  <CustomButton on:click={handleClick01} />
+
   <p>
     Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn
     how to build Svelte apps.
   </p>
+  <button on:click={handleClick02}> generate random number </button>
+  {#await promise}
+    <p>...waiting</p>
+  {:then number}
+    <p>The number is {number}</p>
+  {:catch error}
+    <p style="color: red">{error.message}</p>
+  {/await}
 
-  <img {src} alt="{name} dances." />
+  <img {src} alt="{name2} dances." />
 
   <p>This is a paragraph.</p>
 
@@ -123,7 +156,6 @@
     Clicked {count}
     {count === 1 ? "time" : "times"}
   </button>
-
   {#if count > 10}
     <p>{count} is greater than 10</p>
   {:else if 5 > count}
@@ -139,6 +171,10 @@
 
   <p>{@html string}</p>
 
+  <div on:mousemove={(e) => (m = { x: e.clientX, y: e.clientY })}>
+    The mouse position is {m.x} x {m.y}
+  </div>
+
   <h2>The Famous Cats of YouTube</h2>
 
   <ul>
@@ -150,7 +186,7 @@
       </li>
     {/each}
   </ul>
-
+  <button on:click|once={handleClick11}> Click me for Alert msg</button>
   <button on:click={handleClick1}> Remove first thing </button>
 
   {#each things as thing (thing.id)}
@@ -164,6 +200,7 @@
     padding: 1em;
     max-width: 240px;
     margin: 0 auto;
+    background-color: #c9c8c1;
   }
 
   h1 {
@@ -191,6 +228,12 @@
   @media (min-width: 640px) {
     main {
       max-width: none;
+    }
+
+    div {
+      background-color: #e75626;
+      width: 100%;
+      height: 100%;
     }
   }
 </style>
